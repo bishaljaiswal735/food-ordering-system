@@ -1,0 +1,14 @@
+# Backend (Django)
+backend/venv/
+backend/__pycache__/
+backend/db.sqlite3
+backend/.env
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+
+# Common
+*.pyc
+.DS_Store
