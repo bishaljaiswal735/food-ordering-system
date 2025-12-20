@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from .models import *
 from .serializers import *
+from rest_framework.parsers import MultiPartParser, FormParser
 
 # Create your views here.
 @api_view(['POST'])
@@ -18,10 +19,24 @@ def login(request):
     return Response({"message":"Invalid Credential"}, status = status.HTTP_401_UNAUTHORIZED)
 
 
-class AddCategory(APIView):
+class AddFetchCategory(APIView):
+  def get(self, request):
+     categories = Category.objects.all()
+     serializer = CategorySerializer(categories,many = True)
+     return Response(serializer.data,status=status.HTTP_200_OK)
+
   def post(self, request):
    serializer = CategorySerializer(data = request.data)
    if serializer.is_valid():
       serializer.save()
       return Response({'message':'category is created'}, status=status.HTTP_201_CREATED)
    return Response({'message': 'category is not created'},status=status.HTTP_400_BAD_REQUEST)
+  
+class AddFetchFood(APIView):
+   parser_classes = [MultiPartParser, FormParser]
+   def post(self,request):
+      serializer = FoodSerializer(data = request.data)
+      if serializer.is_valid():
+         serializer.save()
+         return Response({"message":"Food is created"}, status = status.HTTP_201_CREATED)
+      return Response({"message":"Something is wrong"}, status = status.HTTP_400_BAD_REQUEST)

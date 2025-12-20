@@ -6,7 +6,10 @@ from .views import *
 
 urlpatterns = [
     path("login/", views.login),
-    path("add-category/", AddCategory.as_view())
+    path("add-fetch-category/", AddFetchCategory.as_view()),
+    path("add-fetch-food/", AddFetchFood.as_view())
+    # path("user-detail/", UserDetail.as_view())
+
 
 
 ]
