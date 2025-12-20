@@ -34,9 +34,34 @@ class AddFetchCategory(APIView):
   
 class AddFetchFood(APIView):
    parser_classes = [MultiPartParser, FormParser]
+   def get(self,request):
+      query = request.GET.get('q','')
+      if query:
+         foods = Food.objects.filter(item_name__icontains = query)
+      else:
+         foods = Food.objects.all()
+      serializer = FoodSerializer(foods, many= True)
+      return Response(serializer.data,status=status.HTTP_200_OK)
+   
    def post(self,request):
       serializer = FoodSerializer(data = request.data)
       if serializer.is_valid():
          serializer.save()
          return Response({"message":"Food is created"}, status = status.HTTP_201_CREATED)
       return Response({"message":"Something is wrong"}, status = status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def random_foods(request):
+    foods = Food.objects.order_by('?')[:9]
+    serializer = FoodSerializer(foods, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+class AddFetchUser(APIView):
+   def post(self, request):
+      serializer = UserSerializer(data = request.data)
+      if serializer.is_valid():
+         serializer.save()
+         name = serializer.data['first_name']
+         print(name)
+         return Response({"message":"Registered Successfully!!"}, status = status.HTTP_201_CREATED)
+      return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)

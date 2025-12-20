@@ -7,8 +7,9 @@ from .views import *
 urlpatterns = [
     path("login/", views.login),
     path("add-fetch-category/", AddFetchCategory.as_view()),
-    path("add-fetch-food/", AddFetchFood.as_view())
-    # path("user-detail/", UserDetail.as_view())
+    path("add-fetch-food/", AddFetchFood.as_view()),
+    path("random_foods/",views.random_foods),
+    path('add-fetch-user/',AddFetchUser.as_view())
 
 
 
