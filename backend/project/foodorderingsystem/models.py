@@ -1,16 +1,11 @@
 from django.db import models
-
+from django.contrib.auth.models import AbstractUser
 # Create your models here.
-class User(models.Model):
-    first_name = models.CharField(max_length=100,null=True)
-    last_name = models.CharField(max_length=100,null=True)
-    email = models.EmailField(max_length=50,null=True, unique = True)
-    mobile = models.CharField(max_length=15)
-    password = models.CharField(max_length=50)
-    reg_date = models.DateTimeField(auto_now_add = True)
+class User(AbstractUser):
+    mobile = models.CharField(max_length=15, unique=True)
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name}'
+        return self.username
 
 class Category(models.Model):
     category_name = models.CharField(max_length=100)
@@ -28,5 +23,6 @@ class Food(models.Model):
     item_quantity = models.CharField(max_length=50)
     is_available = models.BooleanField(default=True)
     creation_date = models.DateTimeField(auto_now_add=True)
+    
     def __str__(self):
         return f"{self.item_name} {self.item_quantity}"

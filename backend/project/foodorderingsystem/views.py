@@ -60,7 +60,9 @@ class AddFetchUser(APIView):
    def post(self, request):
       serializer = UserSerializer(data = request.data)
       if serializer.is_valid():
+         print('hello2')
          serializer.save()
+         print('hello3')
          name = serializer.data['first_name']
          print(name)
          return Response({"message":"Registered Successfully!!"}, status = status.HTTP_201_CREATED)

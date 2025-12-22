@@ -10,7 +10,15 @@ class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only = True)
     class Meta:
         model =  User
-        fields = '__all__' 
+        fields =   [
+            'id',
+            'first_name',
+            'last_name',
+            'email',
+            'mobile',
+            'password',
+        ]
+       
 
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():
@@ -21,9 +29,29 @@ class UserSerializer(serializers.ModelSerializer):
         if User.objects.filter(mobile=value).exists():
             raise serializers.ValidationError("Mobile already exists")
         return value
+    def validate_first_name(self, value):
+         return value.strip().capitalize()
+    
+
+    def validate_last_name(self, value):
+          return value.strip().capitalize()
+
+
     def create(self,validated_data):
         password = validated_data.pop('password')
-        user = User(**validated_data)
+
+        # remove M2M if present
+        validated_data.pop('groups', None)
+        validated_data.pop('user_permissions', None)
+
+        first_name = validated_data.get('first_name', '')
+        last_name = validated_data.get('last_name', '')
+
+        import uuid
+        username = (first_name + last_name).lower() or 'user'
+        username = f"{username}_{uuid.uuid4().hex[:6]}"
+
+        user = User(username=username, **validated_data)
         user.set_password(password)
         user.save()
         return user
