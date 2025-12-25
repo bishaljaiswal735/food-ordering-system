@@ -11,6 +11,7 @@ from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.permissions import IsAuthenticated,AllowAny, IsAdminUser
 from rest_framework.authentication import BasicAuthentication,SessionAuthentication
+import random
 
 
 # Create your views here.
@@ -28,6 +29,63 @@ def admin_login(request):
 def logout_session(request):
     logout(request._request)  # destroys session server-side
     return Response({"message": "Logged out"})
+
+@api_view(['GET'])
+def random_foods(request):
+    foods = Food.objects.order_by('?')[:9]
+    serializer = FoodSerializer(foods, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def add_carts(request):
+    food_id = request.data.get('foodId')
+    user_id = request.data.get('userId')
+    try:
+      order = Order.objects.get(food__id = food_id,user__id = user_id)
+      order.quantity += 1
+      order.save()
+      return Response({'message':"already exist ot cart and quantity added on it "})
+    except ObjectDoesNotExist:
+      food = Food.objects.get(id = food_id)
+      user = User.objects.get(id = user_id)
+      order = Order.objects.create(food = food,user = user)
+      return Response({'message':"Items added succesfully"})
+    
+@api_view(['GET'])  
+def get_cart_items(request,user_id):
+      order = Order.objects.filter(user__id = user_id,is_order_placed = False).select_related('food')
+      if order.exists():
+         serializer = OrderSerializer(order,many = True)
+         return Response(serializer.data,status=status.HTTP_200_OK)
+      return Response({'message':'There is no cart item related to this user'})
+
+@api_view(['PUT'])  
+def cart_update_quantity(request):
+      order_id = request.data.get('order_id')
+      quantity = request.data.get('quantity')
+      try:
+         order = Order.objects.get(id = order_id,is_order_placed = False)
+         order.quantity = quantity
+         order.save()
+         return Response({'message':"successfully added quantity"})
+      except:
+         return Response({'message':"laura happening"})
+      
+@api_view(['DELETE'])
+def cart_delete(request,order_id):
+   try:
+      order = Order.objects.get(id = order_id)
+      order.delete()
+      return Response({"message":"order deleted successfully!!!"})
+   except ObjectDoesNotExist:
+            return Response({"message":"oops!!! something went wrong "})
+   
+@api_view(['GET'])  
+def order_list(request, user_id):
+     orders = OrderAddress.objects.filter(user__id = user_id).order_by('-order_time')
+     serializer = OrderAddressSerializer(orders, many = True)
+     return Response(serializer.data)
+
 
 class AddFetchCategory(APIView):
   def get_authenticators(self):
@@ -87,11 +145,6 @@ class FoodDetail(APIView):
       serializer = FoodSerializer(item)
       return Response(serializer.data, status = status.HTTP_202_ACCEPTED)
 
-@api_view(['GET'])
-def random_foods(request):
-    foods = Food.objects.order_by('?')[:9]
-    serializer = FoodSerializer(foods, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
 
 class AddFetchUser(APIView):
    def post(self, request):
@@ -119,3 +172,27 @@ def user_login(request):
     except ObjectDoesNotExist:
        return Response({'message':"Not registerd this user!!"}, status = status.HTTP_400_BAD_REQUEST)
     
+def make_unique_order_number():
+    while True:
+        num = str(random.randint(1000000,9999999))
+        if not OrderAddress.objects.filter(order_number=num):
+           return num 
+         
+class PaymentView(APIView):
+   def get(self,request):
+      pass
+
+   def post(self,request):
+      serializer = PaymentSerializer(data = request.data)
+      if serializer.is_valid():
+         user = serializer.validated_data.get('user')
+         orders = Order.objects.filter(user = user)
+         order_number = make_unique_order_number()
+         orders.update( order_number=order_number,is_order_placed=True)
+         order_address = serializer.validated_data.get('order_address')
+         OrderAddress.objects.create(user = user, order_number = order_number, address = order_address)
+         serializer.validated_data['order_number'] = order_number
+         serializer.save()
+         return Response({'message':"order is placed "})
+      return Response(serializer.error)
+

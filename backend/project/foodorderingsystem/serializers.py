@@ -63,3 +63,42 @@ class FoodSerializer(serializers.ModelSerializer):
     class Meta:
         model =  Food
         fields = ['id','category','category_name','item_name','item_price','item_description','image','item_quantity','is_available','creation_date'] 
+
+class OrderSerializer(serializers.ModelSerializer):
+    food = FoodSerializer()
+    class Meta:
+        model = Order
+        fields = ['id','food', 'quantity']
+
+class PaymentSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all()
+    )
+    order_address = serializers.CharField(write_only = True)
+    class Meta:
+        model = PaymentDetail
+        fields = [
+            'id',
+            'user',
+            'order_number',
+            'payment_mode',
+            'card_number',
+            'expiry_date',
+            'cvv',
+            'payment_date',
+            'order_address',
+        ]
+    
+    def create(self, validated_data):
+        validated_data.pop('order_address', None)
+        payment = PaymentDetail.objects.create(**validated_data)
+        return payment
+    
+class OrderAddressSerializer(serializers.ModelSerializer):
+    order_final_status = serializers.SerializerMethodField()
+    class Meta:
+        model = OrderAddress
+        fields = '__all__'
+
+    def get_order_final_status(self, obj):
+        return obj.order_final_status or 'waiting for restaurant confirmtion'
