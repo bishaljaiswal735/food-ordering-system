@@ -196,3 +196,11 @@ class PaymentView(APIView):
          return Response({'message':"order is placed "})
       return Response(serializer.error)
 
+class OrderAddressView(APIView):
+   def get(self, request, order_number):
+      print('hello')
+      objects = get_object_or_404(OrderAddress,order_number = order_number)
+      serializer = OrderAddressSerializer(objects)
+      return Response(serializer.data)
+
+      

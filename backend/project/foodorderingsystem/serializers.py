@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from .models import *
+from django.shortcuts import render, get_object_or_404
+
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -96,9 +98,19 @@ class PaymentSerializer(serializers.ModelSerializer):
     
 class OrderAddressSerializer(serializers.ModelSerializer):
     order_final_status = serializers.SerializerMethodField()
+    payment_mode = serializers.SerializerMethodField(read_only = True)
     class Meta:
         model = OrderAddress
-        fields = '__all__'
+        fields = ['user','order_number','address','order_final_status','order_time','payment_mode']
 
     def get_order_final_status(self, obj):
         return obj.order_final_status or 'waiting for restaurant confirmtion'
+    
+    def get_payment_mode(self,obj):
+        order_number = obj.order_number
+        try:
+            payment = PaymentDetail.objects.get(order_number = order_number)
+            payment_mode = payment.payment_mode
+            return payment_mode
+        except:
+            return None 
