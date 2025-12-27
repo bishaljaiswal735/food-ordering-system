@@ -23,14 +23,22 @@ class UserSerializer(serializers.ModelSerializer):
        
 
     def validate_email(self, value):
-        if User.objects.filter(email=value).exists():
+        user = self.instance
+        qs = User.objects.filter(email = value)
+        if user:
+            qs = qs.exclude(id = user.id)
+        if qs.exists():
             raise serializers.ValidationError("Email already exists")
         return value
-
     def validate_mobile(self, value):
-        if User.objects.filter(mobile=value).exists():
-            raise serializers.ValidationError("Mobile already exists")
+        user = self.instance
+        qs = User.objects.filter(mobile = value)
+        if user:
+            qs = qs.exclude(id = user.id)
+        if qs.exists():
+            raise serializers.ValidationError("mobile already exists")
         return value
+    
     def validate_first_name(self, value):
          return value.strip().capitalize()
     

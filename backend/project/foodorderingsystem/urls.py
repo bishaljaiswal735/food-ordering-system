@@ -18,6 +18,7 @@ urlpatterns = [
     path('cart/update-quantity/',cart_update_quantity),
     path('cart/delete/<int:order_id>',cart_delete),
     path('order/<int:user_id>/',order_list),
-    path('order_address/<str:order_number>/',OrderAddressView.as_view())
+    path('order_address/<str:order_number>/',OrderAddressView.as_view()),
+    path('profile/<int:user_id>/',UserView.as_view())
 
 ]

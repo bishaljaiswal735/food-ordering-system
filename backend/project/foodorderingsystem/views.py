@@ -198,9 +198,30 @@ class PaymentView(APIView):
 
 class OrderAddressView(APIView):
    def get(self, request, order_number):
-      print('hello')
       objects = get_object_or_404(OrderAddress,order_number = order_number)
       serializer = OrderAddressSerializer(objects)
       return Response(serializer.data)
 
       
+class UserView(APIView):
+   def get(self,request,user_id):
+      try:
+         user = User.objects.get(id = user_id)
+         serializer = UserSerializer(user)
+         return Response(serializer.data)
+      except:
+         return Response({'message':"there is no this user in db"})
+   
+   def patch(self,request,user_id):
+      user = User.objects.get(id=user_id)   # fetch object
+      serializer = UserSerializer(
+            user,
+            data=request.data,
+            partial = True
+        )
+
+      if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+      return Response(serializer.errors, status=400)
