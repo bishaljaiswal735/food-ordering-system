@@ -9,6 +9,7 @@ urlpatterns = [
     path("admin-login/", views.admin_login),
     path("admin-check/", AdminCheckAPIView.as_view()),
     path("add-fetch-category/", AddFetchCategory.as_view()),
+    path("category-detail/<int:id>/", CategoryDetail.as_view()),
     path("add-fetch-food/", AddFetchFood.as_view()),
     path("random_foods/",views.random_foods),
     path('add-fetch-user/',AddFetchUser.as_view()),

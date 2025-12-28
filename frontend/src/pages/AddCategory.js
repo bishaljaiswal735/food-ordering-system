@@ -2,13 +2,11 @@ import React, { useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { refreshToken } from '../components/Refresh';
 import { useNavigate } from "react-router-dom";
-
+import api from '../api/axios'; // Axios instance with refresh logic
 
 function AddCategory() {
-  let token = localStorage.getItem("access")
-  const navigate = useNavigate
+  const navigate = useNavigate();
   const [categoryName, setCategoryName] = useState('');
 
   const handleSubmit = async (e) => {
@@ -20,44 +18,26 @@ function AddCategory() {
     }
 
     try {
-      let response = await fetch("http://127.0.0.1:8000/api/add-fetch-category/", {
-      method:"POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ category_name: categoryName }),
-    });
-    if(response.status === 401){
-       token = await refreshToken();
-       if (!token){
-        toast.error("Session expired. Please login again.");
-        localStorage.removeItem("access");
-        localStorage.removeItem("refresh");
-        navigate('adminlogin/')
-        return; 
-       }
-    }
-     response = await fetch("http://127.0.0.1:8000/api/add-fetch-category/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-           Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ category_name: categoryName }),
+      const response = await api.post("add-fetch-category/", {
+        category_name: categoryName,
       });
-      
-      const data = await response.json();
 
-      if (response.status === 201) {
-        toast.success(data.message);
+      if (response.status === 201 || response.status === 200) {
+        toast.success(response.data.message);
         setCategoryName('');
       } else {
-        toast.error(data.message || "Something went wrong");
+        toast.error(response.data.message || "Something went wrong");
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error connecting to server");
+
+      // Optional: if refresh fails, api interceptors redirect to login
+      if (error.response && error.response.status === 401) {
+        toast.error("Session expired. Please login again.");
+        navigate("/adminlogin");
+      } else {
+        toast.error("Error connecting to server");
+      }
     }
   };
 

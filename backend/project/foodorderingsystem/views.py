@@ -105,6 +105,19 @@ class AddFetchCategory(APIView):
       return Response({'message':'category is created'}, status=status.HTTP_201_CREATED)
    return Response({'message': 'category is not created'},status=status.HTTP_400_BAD_REQUEST)
   
+class CategoryDetail(APIView):
+   permission_classes = [IsAdminUser]
+   def put(self,request,id):
+      pass
+   
+   def delete(self,request,id):
+      try:
+         category = Category.objects.get(id = id)
+         category.delete()
+         return Response({"message":"deleted successfully"},status = status.HTTP_200_OK)
+      except:
+         return Response({'message':"something went wrong"}, status = status.HTTP_404_NOT_FOUND)
+  
 class AddFetchFood(APIView):
    parser_classes = [MultiPartParser, FormParser]
 

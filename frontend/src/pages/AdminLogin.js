@@ -21,7 +21,7 @@ const AdminLogin = () => {
         localStorage.setItem("refresh", data.refresh);
         toast.success(data.message);
       setTimeout(() => {
-        window.location.href = '/admindashboard';
+        window.location.href = '/admin';
       },2000)
     }
     else {
