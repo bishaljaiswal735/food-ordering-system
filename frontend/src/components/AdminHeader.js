@@ -1,33 +1,73 @@
-import React from "react";
-import { FaBars, FaBell, FaSignOutAlt } from "react-icons/fa";
+import React, { useState } from 'react';
+import { FaBell, FaSignOutAlt, FaChevronLeft, FaChevronRight, FaBars } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
-const AdminHeader = () => {
+function AdminHeader({ toggleSidebar, sidebarOpen, newOrders }) {
+  const navigate = useNavigate();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+
+
+  
+  const handleLogout = () => {
+    localStorage.removeItem("adminUser");
+    navigate("/admin-login");
+  };
+
+  const toggleNavbar = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-white border-bottom px-3">
-      
-      {/* Left: Brand */}
-      <span className="navbar-brand fw-semibold">
-        🍴 Food Ordering System
-      </span>
+    <nav className="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm px-3">
+      {/* Sidebar Toggle Button */}
+      <button className="btn btn-outline-dark me-3" onClick={toggleSidebar}>
+        {sidebarOpen ? <FaChevronLeft /> : <FaChevronRight />}
+      </button>
 
-      {/* Right: Icons (desktop) */}
-      <div className="d-none d-lg-flex align-items-center ms-auto gap-3">
-        <FaBell style={{ cursor: "pointer" }} />
-        <button className="btn btn-outline-danger btn-sm">
-          <FaSignOutAlt /> Logout
-        </button>
-      </div>
+      {/* Brand */}
+      <span className="navbar-brand fw-semibold fs-5"><i className="fas fa-utensils me-2"></i> Food Ordering System</span>
 
-      {/* Hamburger (mobile only) */}
+      {/* Mobile toggle */}
       <button
-        className="navbar-toggler border-0 d-lg-none ms-auto"
+        className="navbar-toggler ms-auto border-0"
         type="button"
+        onClick={toggleNavbar}
       >
         <FaBars />
       </button>
 
+      {/* Collapsible Items */}
+      <div className={`collapse navbar-collapse ${isCollapsed ? 'show' : ''}`}>
+        <ul className="navbar-nav ms-auto align-items-center gap-3">
+          <li className="nav-item position-relative">
+            <button
+  className="btn btn-outline-secondary position-relative"
+  onClick={() => {
+    if (newOrders > 0) {
+      navigate('/admin-orders/new');
+    }
+  }}
+  title={newOrders > 0 ? 'View New Orders' : 'No new orders'}
+>
+  <FaBell />
+  {newOrders > 0 && (
+    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+      {newOrders}
+    </span>
+  )}
+</button>
+
+          </li>
+          <li className="nav-item">
+            <button className="btn btn-outline-danger" onClick={handleLogout}>
+              <FaSignOutAlt className="me-1" /> Logout
+            </button>
+          </li>
+        </ul>
+      </div>
     </nav>
   );
-};
+}
 
 export default AdminHeader;

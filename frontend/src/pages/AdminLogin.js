@@ -10,20 +10,22 @@ const AdminLogin = () => {
   const handleLogin = async (e) =>
   {
     e.preventDefault();
-    const response = await fetch('http://127.0.0.1:8000/api/login/',{
+    const response = await fetch('http://127.0.0.1:8000/api/admin-login/',{
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body:JSON.stringify({username,password})
     });
     const data = await response.json() 
-    if(response.status === 200){
-      
+    if(response.ok){
+        localStorage.setItem("access", data.access);
+        localStorage.setItem("refresh", data.refresh);
         toast.success(data.message);
       setTimeout(() => {
-        window.location.href = '/admin-dashboard';
+        window.location.href = '/admindashboard';
       },2000)
     }
     else {
+      console.log("hello how are you ")
       toast.error(data.message);
     }
     
@@ -73,7 +75,7 @@ const AdminLogin = () => {
         </button>
       </form>
     </div>
-    <ToastContainer position = 'top-right ' autoClose = {2000}/>
+    <ToastContainer position = 'top-right' autoClose = {2000}/>
   </div>
 
   )

@@ -1,0 +1,20 @@
+/* admin.css */
+
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+#page-content-wrapper.with-sidebar {
+  margin-left: 250px;
+  transition: margin-left 0.3s ease;
+}
+
+#page-content-wrapper.full-width {
+  margin-left: 0;
+  transition: margin-left 0.3s ease;
+}

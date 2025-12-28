@@ -12,7 +12,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.permissions import IsAuthenticated,AllowAny, IsAdminUser
 from rest_framework.authentication import BasicAuthentication,SessionAuthentication
 import random
-
+from rest_framework_simplejwt.tokens import RefreshToken
 
 # Create your views here.
 @api_view(['POST'])
@@ -21,8 +21,9 @@ def admin_login(request):
     password = request.data.get('password')
     user = authenticate(username = username,password = password)
     if user is not None and user.is_staff:
-       login(request._request,user)
-       return Response({'message':"login Successfully",'username':username}, status = status.HTTP_200_OK) 
+       refresh = RefreshToken.for_user(user)
+       return Response({'message':"login Successfully",'username':username,"access": str(refresh.access_token),
+            "refresh": str(refresh)}, status = status.HTTP_200_OK) 
     return Response({"message":"Invalid Credential"}, status = status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['POST'])
@@ -88,16 +89,10 @@ def order_list(request, user_id):
 
 
 class AddFetchCategory(APIView):
-  def get_authenticators(self):
-     if self.request.method == "POST" or self.request.method == "DELETE" or self.request.method == "PUT" or self.request.method == "PATCH":
-        return [SessionAuthentication()]
-     return []
-  
   def get_permissions(self):
-     if self.request.method == "POST" or self.request.method == "DELETE" or self.request.method == "PUT" or self.request.method == "PATCH":
-        return [IsAdminUser()]
-     return [AllowAny]
-  
+        if self.request.method == 'POST':
+            return [IsAdminUser()]
+        return []
   def get(self, request):
      categories = Category.objects.all()
      serializer = CategorySerializer(categories,many = True)
@@ -225,3 +220,9 @@ class UserView(APIView):
             return Response(serializer.data)
 
       return Response(serializer.errors, status=400)
+   
+class AdminCheckAPIView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        return Response({"ok": True})
