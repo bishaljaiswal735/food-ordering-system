@@ -9,13 +9,19 @@ import AddFood from './pages/AddFood';
 import AddCategory from './pages/AddCategory';
 import ManageCategory from './pages/ManageCategory';
 import ManageFood from './pages/ManageFood';
+import SearchPage from './pages/SearchPage';
+import Register from './pages/Register';
+import Login from './pages/Login';
 
 
 function App() {
   return (
     <BrowserRouter><Routes>
       <Route path='/' element={<Home/>}></Route>
-      <Route path='/adminlogin/' element={<AdminLogin/>}></Route>
+      <Route path='/adminlogin' element={<AdminLogin/>}></Route>
+      <Route path='/search' element={<SearchPage/>}></Route>
+      <Route path='/login' element={<Login/>}></Route>
+      <Route path='/register' element={<Register/>}></Route>
       <Route path="/admin" element={<AdminProtectedRoute />}>
           <Route index element={<AdminDashboard />} />
           <Route path='addfood' element={<AddFood/>} />

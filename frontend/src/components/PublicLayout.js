@@ -92,7 +92,7 @@ const PublicLayout = ({ children }) => {
                     <Link className={`nav-link ${location.pathname === "/login" ? "active-nav-link" : ""}`} to="/login"><FaSignInAlt className="me-1" />Login</Link>
                   </li>
                   <li className="nav-item mx-1">
-                    <Link className={`nav-link ${location.pathname === "/admin-login" ? "active-nav-link" : ""}`} to="/admin-login"><FaUserShield className="me-1" />Admin</Link>
+                    <Link className={`nav-link ${location.pathname === "/admin" ? "active-nav-link" : ""}`} to="/admin"><FaUserShield className="me-1" />Admin</Link>
                   </li>
                 </>
               ) : (

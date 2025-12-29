@@ -3,6 +3,7 @@ import {FaUser,FaLock,FaSignInAlt} from 'react-icons/fa'
 import '../styles/admin.css'
 import {toast , ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'
+import PublicLayout from '../components/PublicLayout';
 
 const AdminLogin = () => {
   const [username ,setUserName] = useState('')
@@ -31,6 +32,7 @@ const AdminLogin = () => {
     
   };
   return (
+    <PublicLayout>
   <div
     className="d-flex justify-content-center align-items-center vh-100"
     style={{ backgroundImage: "url('/images/adminback.jpg')" }}
@@ -77,7 +79,7 @@ const AdminLogin = () => {
     </div>
     <ToastContainer position = 'top-right' autoClose = {2000}/>
   </div>
-
+</PublicLayout>
   )
 }
 
