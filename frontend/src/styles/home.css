@@ -1,0 +1,70 @@
+.hero {
+  /* place image in public/images/ */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: white;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
+  position: relative;
+  min-height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hovereffect:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  transition: 0.3s ease-in-out;
+}
+
+input::placeholder {
+  font-style: italic;
+  color: #888;
+}
+
+.heart-anim {
+  transition: transform 0.2s ease;
+}
+.heart-anim:hover {
+  transform: scale(1.2);
+}
+
+.rating-summary-wrapper {
+  position: relative;
+  z-index: 2;
+}
+
+.card {
+  overflow: visible !important;
+  position: relative;
+  z-index: 1;
+}
+
+.card-body {
+  position: relative;
+  z-index: 1;
+}
+
+.row {
+  overflow: visible !important;  /* allow child elements to overflow */
+  position: relative;            /* ensure proper stacking context */
+  z-index: 0;
+}
+
+.rating-summary-wrapper .hover-popup {
+  z-index: 999;
+}
+
+
+.hover-popup {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+
+

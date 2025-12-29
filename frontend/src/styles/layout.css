@@ -1,0 +1,48 @@
+.navbar-brand {
+  transition: color 0.3s ease, transform 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.navbar-brand:hover {
+  color: #ffc107 !important;
+  transform: translateY(-2px);
+}
+
+.navbar-brand:hover svg {
+  animation: shake 0.3s ease;
+}
+
+@keyframes shake {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg); }
+  50% { transform: rotate(5deg); }
+  75% { transform: rotate(-3deg); }
+  100% { transform: rotate(0deg); }
+}
+
+
+/* Highlight the active link */
+.active-nav-link {
+  background-color: #ffc107;
+  color: #000 !important;
+  border-radius: 0.25rem;
+  font-weight: bold;
+  padding: 5px 10px;
+  transition: background-color 0.3s ease;
+}
+
+/* Highlight active dropdown item */
+.active-dropdown {
+  background-color: #ffc107;
+  color: #000 !important;
+  font-weight: 500;
+}
+
+.dropdown-item:hover {
+  background-color: #f0ad4e;
+  color: #000;
+}
+
+
+

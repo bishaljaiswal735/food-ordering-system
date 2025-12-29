@@ -24,4 +24,7 @@ urlpatterns = [
     path('order_address/<str:order_number>/',OrderAddressView.as_view()),
     path('profile/<int:user_id>/',UserView.as_view()),
     path("api/token/refresh/", TokenRefreshView.as_view()),
+    path('wishlist/<int:user_id>/', get_wishlist, name='get_wishlist'),
+    path('food-rating-summary/<int:food_id>/',food_rating_summary),
+
 ]

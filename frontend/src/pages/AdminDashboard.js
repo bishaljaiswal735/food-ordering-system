@@ -9,7 +9,7 @@ const AdminDashboard = () => {
   
   return (
     <div>
-      <ManageFood/>
+      <ManageCategory/>
     </div>
   )
 }

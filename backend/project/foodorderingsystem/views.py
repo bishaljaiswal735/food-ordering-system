@@ -242,3 +242,45 @@ class AdminCheckAPIView(APIView):
 
     def get(self, request):
         return Response({"ok": True})
+    
+
+from .serializers import WishlistSerializer 
+@api_view(['POST'])
+def add_to_wishlist(request):
+    user_id = request.data.get('user_id')
+    food_id = request.data.get('food_id')
+    Wishlist.objects.get_or_create(user_id=user_id, food_id=food_id)
+    return Response({"message": "Added to wishlist"}, status=201)
+
+@api_view(['GET'])
+def get_wishlist(request, user_id):
+    wishlist_items = Wishlist.objects.filter(user_id=user_id).select_related('food')
+    serializer = WishlistSerializer(wishlist_items, many=True)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+def remove_from_wishlist(request):
+    user_id = request.data.get('user_id')
+    food_id = request.data.get('food_id')
+    try:
+        Wishlist.objects.get(user_id=user_id, food_id=food_id).delete()
+        return Response({"message": "Removed from wishlist"}, status=200)
+    except Wishlist.DoesNotExist:
+        return Response({"message": "Item not found in wishlist"}, status=404)
+    
+   
+@api_view(['GET'])
+def food_rating_summary(request, food_id):
+    from django.db.models import Count, Avg
+
+    reviews = Review.objects.filter(food_id=food_id)
+    rating_summary = reviews.values('rating').annotate(count=Count('rating')).order_by('-rating')
+    average = reviews.aggregate(average=Avg('rating'))['average'] or 0
+
+    total_reviews = reviews.count()
+    return Response({
+        'average': round(average, 1),
+        'total_reviews': total_reviews,
+        'breakdown': {entry['rating']: entry['count'] for entry in rating_summary}
+    })
+    
