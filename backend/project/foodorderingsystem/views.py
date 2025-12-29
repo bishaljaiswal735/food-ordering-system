@@ -121,13 +121,8 @@ class CategoryDetail(APIView):
 class AddFetchFood(APIView):
    parser_classes = [MultiPartParser, FormParser]
 
-   def get_authenticators(self):
-         if self.request.method == 'POST' or self.request.method == 'PUT' or self.request.method == 'DELETE' or self.request.method == 'PATCH':
-          return [SessionAuthentication()]
-         return []
-   
    def get_permissions(self):
-      if self.request.method == 'POST' or self.request.method == 'PUT' or self.request.method == 'DELETE' or self.request.method == 'PATCH':
+      if self.request.method == 'POST' :
          return [IsAdminUser()]
       return [AllowAny()]
    
@@ -152,6 +147,14 @@ class FoodDetail(APIView):
       item = get_object_or_404(Food, id = pk )
       serializer = FoodSerializer(item)
       return Response(serializer.data, status = status.HTTP_202_ACCEPTED)
+   
+   def delete(self,request,pk):
+      try:
+         item = Food.objects.get(id = pk)
+         item.delete()
+         return Response({"message":"deleted successfully"},status = status.HTTP_200_OK)
+      except:
+         return Response({'message':"something went wrong"}, status = status.HTTP_404_NOT_FOUND)
 
 
 class AddFetchUser(APIView):
