@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Link } from 'react-router-dom';
 
 function OrdersNotConfirmed() {
   const [orders, setOrders] = useState([]);
@@ -39,9 +40,12 @@ function OrdersNotConfirmed() {
                       <td>{order.order_number}</td>
                       <td>{new Date(order.order_time).toLocaleString()}</td>
                       <td>
-                        <a href={`/admin-order/view/${order.order_number}`} className="btn btn-sm btn-info">
-                          View Details
-                        </a>
+                         <Link
+                            to={`/admin/order-view/${order.order_number}`}
+                            className="btn btn-sm btn-info"
+                          >
+                            View Details
+                          </Link>
                       </td>
                     </tr>
                   ))

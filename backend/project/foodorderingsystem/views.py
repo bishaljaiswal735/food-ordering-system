@@ -400,3 +400,14 @@ def order_report_between_dates(request):
 
     serializer = OrderAddressSerializer(queryset.order_by('-order_time'), many=True)
     return Response(serializer.data)
+
+@api_view(['GET'])
+def order_view_detail(request,order_number):
+    orders = Order.objects.filter(order_number = order_number).select_related('user')
+    food_ids = orders.values_list('food',flat = True)
+    foods = Food.objects.filter(id__in = food_ids)
+    order_address = get_object_or_404(OrderAddress,order_number = order_number)
+    return Response({"order":OrderSerializer(orders,many = True).data,
+                     'foods':FoodSerializer(foods,many = True).data,
+                     'order_address':OrderAddressSerializer(order_address).data}
+                    )

@@ -38,4 +38,5 @@ urlpatterns = [
     path('ordercancelled/',order_cancelled),
     path('allorders/',all_orders),
     path('orders-between-dates/', order_report_between_dates),
+    path('order-view-detail/<str:order_number>/', order_view_detail),
 ]

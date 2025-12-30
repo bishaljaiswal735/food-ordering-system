@@ -76,9 +76,10 @@ class FoodSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     food = FoodSerializer()
+    user = UserSerializer()
     class Meta:
         model = Order
-        fields = ['id','food', 'quantity']
+        fields = ['id','food', 'quantity','user']
 
 class PaymentSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(
@@ -132,3 +133,8 @@ class WishlistSerializer(serializers.ModelSerializer):
     class Meta:
         model = Wishlist
         fields = ['food_id', 'item_name', 'item_price', 'item_description', 'image']
+
+class TrackingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FoodTracking
+        fields = "__all__"

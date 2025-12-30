@@ -27,6 +27,7 @@ import FoodDelivered from './pages/FoodDelivered';
 import FoodbeingPrepared from './pages/FoodbeingPrepared';
 import AllOrders from './pages/AllOrders';
 import OrderReport from './pages/OrderReport';
+import ViewFoodOrder from './pages/ViewFoodOrder';
 
 
 function App() {
@@ -58,6 +59,7 @@ function App() {
           <Route path='orders/preparing' element={<FoodbeingPrepared/>} />
           <Route path='orders/all' element={<AllOrders/>} />
           <Route path='report-datewise' element={<OrderReport/>} />
+          <Route path='order-view/:order_number' element={<ViewFoodOrder/>} />
 
        </Route>
       </Routes>

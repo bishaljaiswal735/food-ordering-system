@@ -39,7 +39,7 @@ function FoodPickup() {
                       <td>{order.order_number}</td>
                       <td>{new Date(order.order_time).toLocaleString()}</td>
                       <td>
-                        <a href={`/admin-order/view/${order.order_number}`} className="btn btn-sm btn-info">
+                        <a href={`/admin/order-view/${order.order_number}`} className="btn btn-sm btn-info">
                           View Details
                         </a>
                       </td>
