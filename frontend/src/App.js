@@ -19,6 +19,14 @@ import OrderDetails from './pages/OrderDetails';
 import MyOrders from './pages/MyOrders';
 import ProfilePage from './pages/ProfilePage';
 import ChangePassword from './pages/ChangePassword';
+import OrdersNotConfirmed from './pages/OrdersNotConfirmed';
+import OrdersConfirmed from './pages/OrdersConfirmed';
+import OrderCancelled from './pages/OrderCancelled';
+import FoodPickup from './pages/FoodPickup';
+import FoodDelivered from './pages/FoodDelivered';
+import FoodbeingPrepared from './pages/FoodbeingPrepared';
+import AllOrders from './pages/AllOrders';
+import OrderReport from './pages/OrderReport';
 
 
 function App() {
@@ -42,6 +50,15 @@ function App() {
           <Route path='managefood' element={<ManageFood/>} />
           <Route path='addcategory' element={<AddCategory/>} />
           <Route path='managecategory' element={<ManageCategory/>} />
+          <Route path='orders/new' element={<OrdersNotConfirmed/>} />
+          <Route path='orders/confirmed' element={<OrdersConfirmed/>} />
+          <Route path='orders/cancelled' element={<OrderCancelled/>} />
+          <Route path='orders/pickup' element={<FoodPickup/>} />
+          <Route path='orders/delivered' element={<FoodDelivered/>} />
+          <Route path='orders/preparing' element={<FoodbeingPrepared/>} />
+          <Route path='orders/all' element={<AllOrders/>} />
+          <Route path='report-datewise' element={<OrderReport/>} />
+
        </Route>
       </Routes>
       </BrowserRouter>

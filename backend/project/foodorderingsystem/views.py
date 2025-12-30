@@ -328,3 +328,75 @@ def change_password(request,user_id):
       return Response({'message':"updated succesfully"}, status = status.HTTP_200_OK)
    return Response({"message":"invalid password"},status = status.HTTP_400_BAD_REQUEST)
    
+@api_view(["GET"])
+def orders_not_confirmed(request):
+   order = OrderAddress.objects.filter(order_final_status__isnull = True).order_by('-order_time')
+   serializers = OrderAddressSerializer(order,many =True)
+   return Response(serializers.data)
+
+@api_view(["GET"])
+def orders_confirmed(request):
+   order = OrderAddress.objects.filter(order_final_status = "Order Confirmed").order_by('-order_time')
+   serializers = OrderAddressSerializer(order,many =True)
+   return Response(serializers.data)
+
+@api_view(['GET'])
+def orders_not_confirmed(request):
+    orders = OrderAddress.objects.filter(order_final_status__isnull=True).order_by('-order_time')
+    serializer = OrderAddressSerializer(orders, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def orders_confirmed(request):
+    orders = OrderAddress.objects.filter(order_final_status="Order Confirmed").order_by('-order_time')
+    serializer = OrderAddressSerializer(orders, many=True)  # same serializer if fields match
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def foodbeing_prepared(request):
+    orders = OrderAddress.objects.filter(order_final_status="Food being Prepared").order_by('-order_time')
+    serializer = OrderAddressSerializer(orders, many=True)  # same serializer if fields match
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def food_pickup(request):
+    orders = OrderAddress.objects.filter(order_final_status="Food Pickup").order_by('-order_time')
+    serializer = OrderSerializer(orders, many=True)  # same serializer if fields match
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def food_delivered(request):
+    orders = OrderAddress.objects.filter(order_final_status="Food Delivered").order_by('-order_time')
+    serializer = OrderSerializer(orders, many=True)  # same serializer if fields match
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def order_cancelled(request):
+    orders = OrderAddress.objects.filter(order_final_status="Order Cancelled").order_by('-order_time')
+    serializer = OrderSerializer(orders, many=True)  # same serializer if fields match
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def all_orders(request):
+    orders = OrderAddress.objects.all().order_by('-order_time')
+    serializer = OrderSerializer(orders, many=True)  # same serializer if fields match
+    return Response(serializer.data)
+
+@api_view(['POST'])
+def order_report_between_dates(request):
+    from_date = request.data.get('from_date')
+    to_date = request.data.get('to_date')
+    status_filter = request.data.get('status')
+
+    if not from_date or not to_date:
+        return Response({'error': 'Both dates are required'}, status=400)
+
+    queryset = OrderAddress.objects.filter(order_time__date__range=[from_date, to_date])
+
+    if status_filter == 'not_confirmed':
+        queryset = queryset.filter(order_final_status__isnull=True)
+    elif status_filter != 'all':
+        queryset = queryset.filter(order_final_status=status_filter)
+
+    serializer = OrderAddressSerializer(queryset.order_by('-order_time'), many=True)
+    return Response(serializer.data)

@@ -29,7 +29,13 @@ urlpatterns = [
     path('wishlist/<int:user_id>/', get_wishlist, name='get_wishlist'),
     path('food-rating-summary/<int:food_id>/',food_rating_summary),
     path('invoice/<str:order_number>/', generate_invoice_html, name='invoice'),
-    path("change_password/<int:user_id>/", change_password)
-
-
+    path("change_password/<int:user_id>/", change_password),
+    path("orders-not-confirmed/", orders_not_confirmed),
+    path("orders-confirmed/", orders_confirmed),
+     path('foodbeing_prepared/',foodbeing_prepared),
+    path('foodpickup/',food_pickup),
+    path('fooddelivered/',food_delivered),
+    path('ordercancelled/',order_cancelled),
+    path('allorders/',all_orders),
+    path('orders-between-dates/', order_report_between_dates),
 ]
