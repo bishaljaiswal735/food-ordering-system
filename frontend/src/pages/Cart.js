@@ -15,9 +15,17 @@ function Cart() {
     fetch(`http://127.0.0.1:8000/api/cart/cart-list/${userId}/`)
       .then(res => res.json())
       .then(data => {
-        setCartItems(data);
-        const total = data.reduce((sum, item) => sum + parseFloat(item.food.item_price) * item.quantity, 0);
+        // Ensure data is always an array
+        const itemsArray = Array.isArray(data) ? data : [];
+        setCartItems(itemsArray);
+
+        const total = itemsArray.reduce((sum, item) => sum + parseFloat(item.food.item_price) * item.quantity, 0);
         setGrandTotal(total);
+      })
+      .catch(err => {
+        console.error("Failed to fetch cart:", err);
+        setCartItems([]);
+        setGrandTotal(0);
       });
   }, [userId]);
 
@@ -27,15 +35,17 @@ function Cart() {
     const response = await fetch(`http://127.0.0.1:8000/api/cart/update-quantity/`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ order_id : orderId, quantity: newQty })
+      body: JSON.stringify({ order_id: orderId, quantity: newQty })
     });
 
     if (response.ok) {
       const updated = await fetch(`http://127.0.0.1:8000/api/cart/cart-list/${userId}/`);
       const data = await updated.json();
-      setCartItems(data);
-      setCartCount(data.length);
-      const total = data.reduce((sum, item) => sum + parseFloat(item.food.item_price) * item.quantity, 0);
+      const itemsArray = Array.isArray(data) ? data : [];
+      setCartItems(itemsArray);
+      setCartCount(itemsArray.length);
+
+      const total = itemsArray.reduce((sum, item) => sum + parseFloat(item.food.item_price) * item.quantity, 0);
       setGrandTotal(total);
     }
   };
@@ -51,9 +61,11 @@ function Cart() {
     if (response.ok) {
       const updated = await fetch(`http://127.0.0.1:8000/api/cart/cart-list/${userId}/`);
       const data = await updated.json();
-      setCartItems(data);
-      setCartCount(data.length);
-      const total = data.reduce((sum, item) => sum + parseFloat(item.food.item_price) * item.quantity, 0);
+      const itemsArray = Array.isArray(data) ? data : [];
+      setCartItems(itemsArray);
+      setCartCount(itemsArray.length);
+
+      const total = itemsArray.reduce((sum, item) => sum + parseFloat(item.food.item_price) * item.quantity, 0);
       setGrandTotal(total);
     }
   };

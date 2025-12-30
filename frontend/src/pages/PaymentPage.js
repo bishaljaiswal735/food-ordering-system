@@ -32,11 +32,11 @@ function PaymentPage() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
      body: JSON.stringify({
-  userId: userId,
-  address: address,
-  paymentMode: paymentMode,
-  cardNumber: paymentMode === 'online' ? cardDetails.cardNumber : '',
-  expiry: paymentMode === 'online' ? cardDetails.expiry : '',
+  user: userId,
+  order_address: address,
+  payment_mode: paymentMode,
+  card_number: paymentMode === 'online' ? cardDetails.cardNumber : '',
+  expiry_date: paymentMode === 'online' ? cardDetails.expiry : '',
   cvv: paymentMode === 'online' ? cardDetails.cvv : ''
 })
     });

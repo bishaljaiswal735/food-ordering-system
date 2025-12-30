@@ -22,10 +22,13 @@ urlpatterns = [
     path('cart/update-quantity/',cart_update_quantity),
     path('cart/delete/<int:order_id>/',cart_delete),
     path('order/<int:user_id>/',order_list),
+    path('order/order_by_number/<str:order_number>/',orders_item_list),
     path('order_address/<str:order_number>/',OrderAddressView.as_view()),
     path('profile/<int:user_id>/',UserView.as_view()),
     path("token/refresh/", TokenRefreshView.as_view()),
     path('wishlist/<int:user_id>/', get_wishlist, name='get_wishlist'),
     path('food-rating-summary/<int:food_id>/',food_rating_summary),
+    path('invoice/<str:order_number>/', generate_invoice_html, name='invoice'),
+
 
 ]

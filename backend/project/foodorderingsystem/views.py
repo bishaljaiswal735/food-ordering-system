@@ -13,6 +13,7 @@ from rest_framework.permissions import IsAuthenticated,AllowAny, IsAdminUser
 from rest_framework.authentication import BasicAuthentication,SessionAuthentication
 import random
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.http import HttpResponse
 
 # Create your views here.
 @api_view(['POST'])
@@ -284,3 +285,34 @@ def food_rating_summary(request, food_id):
         'breakdown': {entry['rating']: entry['count'] for entry in rating_summary}
     })
     
+@api_view(["GET"])
+def orders_item_list(request,order_number):
+   items = Order.objects.filter(order_number = order_number).select_related('food')
+   serializer = OrderSerializer(items,many=True)
+   return Response(serializer.data,status = status.HTTP_200_OK)
+
+from django.template.loader import render_to_string
+def generate_invoice_html(request, order_number):
+    orders = Order.objects.select_related('food').filter(order_number=order_number, is_order_placed=True)
+    address = get_object_or_404(OrderAddress, order_number=order_number)
+
+    grand_total = 0
+    order_data = []
+
+    for order in orders:
+        total_price = float(order.food.item_price) * order.quantity
+        grand_total += total_price
+        order_data.append({
+            'food': order.food,
+            'quantity': order.quantity,
+            'total_price': total_price
+        })
+
+    html_content = render_to_string('invoice_template.html', {
+        'order_number': order_number,
+        'orders': order_data,
+        'address': address,
+        'grand_total': grand_total
+    })
+
+    return HttpResponse(html_content)

@@ -14,7 +14,7 @@ const handleCloseModal = () => setShowCancelModal(false);
 
   useEffect(() => {
     // Fetch Order Items
-    fetch(`http://127.0.0.1:8000/api/orders/by_order_number/${order_number}/`)
+    fetch(`http://127.0.0.1:8000/api/order/order_by_number/${order_number}/`)
       .then(res => res.json())
       .then(data => {
         setOrderItems(data);
@@ -45,10 +45,10 @@ const handleCloseModal = () => setShowCancelModal(false);
             <div key={index} className="card mb-3 shadow-sm rounded-3 border-0">
               <div className="row g-0">
                 <div className="col-md-4">
-                  <img src={item.food.image} className="img-fluid rounded" alt={item.food.item_name} />
+                  <img src={`http://127.0.0.1:8000${item.food.image}`} className="img-fluid rounded" alt={item.food.item_name} />
                 </div>
                 <div className="col-md-8 p-3">
-                  <h5>{item.food.item_name} ({item.food.item_quantity})</h5>
+                  <h5>{item.food.item_name} </h5>
                   <p>{item.food.item_description}</p>
                   <p><strong>Price:</strong> ₹{item.food.item_price}</p>
                   <p><strong>Quantity:</strong> {item.quantity}</p>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Invoice #{{ order_number }}</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+    h2 { margin-bottom: 5px; }
+    .text-right { text-align: right; }
+  </style>
+</head>
+<body>
+  <h2>Invoice for Order #{{ order_number }}</h2>
+  <p><strong>Date:</strong> {{ address.order_time }}</p>
+  <p><strong>Address:</strong> {{ address.address }}</p>
+  <hr>
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Food</th>
+        <th>Price</th>
+        <th>Qty</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in orders %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ order.food.item_name }}</td>
+        <td>₹{{ order.food.item_price }}</td>
+        <td>{{ order.quantity }}</td>
+        <td>₹{{ order.total_price|floatformat:2 }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <th colspan="4" class="text-right">Grand Total</th>
+        <th>₹{{ grand_total }}</th>
+      </tr>
+    </tfoot>
+  </table>
+
+  <div style="margin-top: 30px;">
+    <button onclick="window.print()">🖨️ Print Invoice</button>
+  </div>
+</body>
+</html>
