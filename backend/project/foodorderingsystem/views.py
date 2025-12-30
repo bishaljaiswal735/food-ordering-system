@@ -60,15 +60,15 @@ def get_cart_items(request,user_id):
          return Response(serializer.data,status=status.HTTP_200_OK)
       return Response({'message':'There is no cart item related to this user'})
 
-@api_view(['PUT'])  
+@api_view(['PATCH'])  
 def cart_update_quantity(request):
       order_id = request.data.get('order_id')
-      quantity = request.data.get('quantity')
       try:
          order = Order.objects.get(id = order_id,is_order_placed = False)
-         order.quantity = quantity
-         order.save()
-         return Response({'message':"successfully added quantity"})
+         serializer = OrderSerializer(order,data = request.data,partial =True)
+         if serializer.is_valid():
+            serializer.save()
+            return Response({'message':"successfully added quantity"})
       except:
          return Response({'message':"laura happening"})
       

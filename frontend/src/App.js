@@ -12,6 +12,10 @@ import ManageFood from './pages/ManageFood';
 import SearchPage from './pages/SearchPage';
 import Register from './pages/Register';
 import Login from './pages/Login';
+import FoodDetail from './pages/FoodDetail';
+import Cart from './pages/Cart';
+import PaymentPage from './pages/PaymentPage';
+import OrderDetails from './pages/OrderDetails';
 
 
 function App() {
@@ -22,6 +26,10 @@ function App() {
       <Route path='/search' element={<SearchPage/>}></Route>
       <Route path='/login' element={<Login/>}></Route>
       <Route path='/register' element={<Register/>}></Route>
+      <Route path="/food/:id" element={<FoodDetail/>} />
+      <Route path='/cart' element={<Cart/>}></Route>
+      <Route path='/payment' element={<PaymentPage/>}></Route>
+      <Route path='/my-orders' element={<OrderDetails/>}></Route>
       <Route path="/admin" element={<AdminProtectedRoute />}>
           <Route index element={<AdminDashboard />} />
           <Route path='addfood' element={<AddFood/>} />
