@@ -17,6 +17,8 @@ import Cart from './pages/Cart';
 import PaymentPage from './pages/PaymentPage';
 import OrderDetails from './pages/OrderDetails';
 import MyOrders from './pages/MyOrders';
+import ProfilePage from './pages/ProfilePage';
+import ChangePassword from './pages/ChangePassword';
 
 
 function App() {
@@ -31,6 +33,8 @@ function App() {
       <Route path='/cart' element={<Cart/>}></Route>
       <Route path='/payment' element={<PaymentPage/>}></Route>
       <Route path='/my-orders' element={<MyOrders/>}></Route>
+      <Route path='/profile' element={<ProfilePage/>}></Route>
+      <Route path='/change-password' element={<ChangePassword/>}></Route>
       <Route path='/order-details/:order_number' element={<OrderDetails/>}></Route>
       <Route path="/admin" element={<AdminProtectedRoute />}>
           <Route index element={<AdminDashboard />} />

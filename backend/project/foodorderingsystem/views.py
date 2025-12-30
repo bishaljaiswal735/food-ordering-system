@@ -234,7 +234,7 @@ class UserView(APIView):
 
       if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data,status=status.HTTP_200_OK)
 
       return Response(serializer.errors, status=400)
    
@@ -316,3 +316,15 @@ def generate_invoice_html(request, order_number):
     })
 
     return HttpResponse(html_content)
+
+@api_view(["PATCH"])
+def change_password(request,user_id):
+   user = get_object_or_404(User,id = user_id)
+   current_password = request.data.get("current_password")
+   new_password = request.data.get('new_password')
+   if user.check_password(current_password):
+      user.set_password(new_password)
+      user.save()
+      return Response({'message':"updated succesfully"}, status = status.HTTP_200_OK)
+   return Response({"message":"invalid password"},status = status.HTTP_400_BAD_REQUEST)
+   
