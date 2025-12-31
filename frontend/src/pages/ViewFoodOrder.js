@@ -16,7 +16,7 @@ function ViewFoodOrder() {
 
   if (!data) return <AdminLayout><p className="text-center mt-5">Loading...</p></AdminLayout>;
 
-  const { order, foods, order_address } = data;
+ const { order, foods, order_address, tracking } = data;
  const user = order[0]?.user;
 
   const statusOptions = [
@@ -74,7 +74,7 @@ const visibleOptions = statusOptions.slice(statusOptions.indexOf(currentStatus) 
         </div>
 
         <h5 className="mt-4">Tracking History</h5>
-        {/* <table className="table table-bordered">
+        <table className="table table-bordered">
           <thead>
             <tr><th>#</th><th>Status</th><th>Remark</th><th>Date</th></tr>
           </thead>
@@ -92,9 +92,9 @@ const visibleOptions = statusOptions.slice(statusOptions.indexOf(currentStatus) 
               ))
             )}
           </tbody>
-        </table> */}
+        </table>
 
-{/* 
+
 {order.order_final_status !== "Food Delivered" && (
   <div className="mt-4">
     <h5>Update Order Status</h5>
@@ -110,7 +110,7 @@ const visibleOptions = statusOptions.slice(statusOptions.indexOf(currentStatus) 
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            order_number: order.order_number,
+            order_number: order_address.order_number,
             status,
             remark,
           }),
@@ -148,7 +148,7 @@ const visibleOptions = statusOptions.slice(statusOptions.indexOf(currentStatus) 
       </div>
     </form>
   </div>
-)} */}
+)} 
 
 
       </div>

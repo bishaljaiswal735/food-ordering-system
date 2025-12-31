@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import authenticate,login,logout
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,parser_classes
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
@@ -403,11 +403,46 @@ def order_report_between_dates(request):
 
 @api_view(['GET'])
 def order_view_detail(request,order_number):
+    print(order_number)
     orders = Order.objects.filter(order_number = order_number).select_related('user')
     food_ids = orders.values_list('food',flat = True)
     foods = Food.objects.filter(id__in = food_ids)
     order_address = get_object_or_404(OrderAddress,order_number = order_number)
+    tracking = FoodTracking.objects.filter(order__order_number = order_number)
     return Response({"order":OrderSerializer(orders,many = True).data,
                      'foods':FoodSerializer(foods,many = True).data,
-                     'order_address':OrderAddressSerializer(order_address).data}
+                     'order_address':OrderAddressSerializer(order_address).data,
+                     'tracking':TrackingSerializer(tracking,many = True).data
+                     }
                     )
+
+from rest_framework.parsers import JSONParser
+@api_view(['POST'])
+@parser_classes([JSONParser])
+def update_order_status(request):
+    order_number = request.data.get('order_number')
+    new_status = request.data.get('status')
+    remark = request.data.get('remark')
+
+    try:
+        address = OrderAddress.objects.get(order_number=order_number)
+        order = Order.objects.filter(order_number=order_number).first()
+        if not order:
+            return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Save status update in tracking
+        FoodTracking.objects.create(
+            order=order,
+            remark=remark,
+            status=new_status,
+            order_cancelled_by_user=False
+        )
+
+        # Update final status
+        address.order_final_status = new_status
+        address.save()
+
+        return Response({'message': 'Order status updated successfully.'})
+    except OrderAddress.DoesNotExist:
+        return Response({'error': 'Invalid order number'}, status=status.HTTP_400_BAD_REQUEST)
+    
