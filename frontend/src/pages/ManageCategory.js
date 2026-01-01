@@ -110,7 +110,7 @@ function ManageCategory() {
               <td>{new Date(cat.creation_date).toLocaleString()}</td>
               <td>
                 <Link
-                  to={`/admin-category/edit/${cat.id}`}
+                  to={`/admin/category-edit/${cat.id}`}
                   className="btn btn-sm btn-primary me-2"
                 >
                   <i className="fas fa-edit me-1"></i> Edit

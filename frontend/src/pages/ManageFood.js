@@ -121,7 +121,7 @@ function ManageFood() {
                       <td>{food.item_name}</td>
                       <td>
                         <Link
-                          to={`/admin-food/edit/${food.id}`}
+                          to={`/admin/food-edit/${food.id}`}
                           className="btn btn-sm btn-info me-2"
                         >
                           Edit

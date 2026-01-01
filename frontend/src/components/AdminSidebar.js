@@ -31,7 +31,7 @@ function AdminSidebar() {
           <FaThLarge /> Dashboard
         </Link>
 
-        <Link to="/admin-users" className="list-group-item list-group-item-action bg-dark text-white">
+        <Link to="/admin/users" className="list-group-item list-group-item-action bg-dark text-white">
           <FaUsers /> Reg Users
         </Link>
 
@@ -84,7 +84,7 @@ function AdminSidebar() {
           </div>
         )}
 
-         <Link to="/admin-order/search" className="list-group-item list-group-item-action bg-dark text-white border-0">
+         <Link to="/admin/order-search" className="list-group-item list-group-item-action bg-dark text-white border-0">
           <FaSearch /> Search
         </Link>
         <Link to="/admin-reviews" className="list-group-item list-group-item-action bg-dark text-white">

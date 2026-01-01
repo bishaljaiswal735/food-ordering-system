@@ -17,6 +17,7 @@ urlpatterns = [
     path('user-login/',views.user_login),
     path('session-logout/',views.logout_session),
     path('food-detail/<int:pk>/', FoodDetail.as_view()),
+    path('user-detail/<int:pk>/', UserDetail.as_view()),
     path('cart/add/', add_carts),
     path('cart/cart-list/<int:user_id>/', get_cart_items),
     path('cart/update-quantity/',cart_update_quantity),
@@ -40,5 +41,5 @@ urlpatterns = [
     path('orders-between-dates/', order_report_between_dates),
     path('order-view-detail/<str:order_number>/', order_view_detail),
     path('update-order-status/', update_order_status, name='update_order_status'),
-
+    path("search-orders/", search_order)
 ]
