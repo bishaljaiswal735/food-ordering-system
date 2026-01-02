@@ -319,7 +319,7 @@ class PaymentView(APIView):
         serializer = PaymentSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data.get("user")
-            orders = Order.objects.filter(user=user)
+            orders = Order.objects.filter(user=user, is_order_placed = False)
             order_number = make_unique_order_number()
             orders.update(order_number=order_number, is_order_placed=True)
             order_address = serializer.validated_data.get("order_address")
@@ -627,3 +627,85 @@ def search_order(request):
     orders = OrderAddress.objects.filter(order_number__icontains=identifier)
     serializer = OrderAddressSerializer(orders, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+from django.utils.timezone import now, timedelta
+from django.db.models import Sum, F, FloatField
+from django.db.models.functions import Cast
+@api_view(['GET'])
+def dashboard_metrics(request):
+    today = now().date()
+    start_week = today - timedelta(days=today.weekday())
+    start_month = today.replace(day=1)
+    start_year = today.replace(month=1, day=1)
+
+    def get_sales_total(start_date):
+        # Get order_numbers from PaymentDetail after start_date
+        paid_orders = PaymentDetail.objects.filter(payment_date__gte=start_date).values_list('order_number', flat=True)
+
+        # Join with Order model and calculate total sale amount
+        total = Order.objects.filter(order_number__in=paid_orders).annotate(
+            total_price=F('quantity') * Cast(F('food__item_price'), FloatField())
+        ).aggregate(sale_amount=Sum('total_price'))['sale_amount'] or 0.0
+
+        return round(total, 2)
+    data = {
+        "total_orders": OrderAddress.objects.count(),
+        "new_orders": OrderAddress.objects.filter(order_final_status__isnull=True).count(),
+        "confirmed_orders": OrderAddress.objects.filter(order_final_status="Order Confirmed").count(),
+        "food_preparing": OrderAddress.objects.filter(order_final_status="Food being Prepared").count(),
+        "food_pickup": OrderAddress.objects.filter(order_final_status="Food Pickup").count(),
+        "food_delivered": OrderAddress.objects.filter(order_final_status="Food Delivered").count(),
+        "cancelled_orders": OrderAddress.objects.filter(order_final_status="Order Cancelled").count(),
+        "total_users": User.objects.count(),
+        "total_categories": Category.objects.count(),
+        "total_reviews": Review.objects.count(),
+        "total_wishlists": Wishlist.objects.count(),
+        "today_sales": get_sales_total(today),
+        "week_sales": get_sales_total(start_week),
+        "month_sales": get_sales_total(start_month),
+        "year_sales": get_sales_total(start_year),
+    }
+    return Response(data)
+
+from django.db.models.functions import TruncMonth
+from django.db.models import Sum
+from collections import defaultdict
+@api_view(['GET'])
+def monthly_sales_summary(request):
+    # Step 1: Get placed orders with total price per order_number
+    orders = (
+        Order.objects
+        .filter(is_order_placed=True)
+        .values('order_number')
+        .annotate(total_price=Sum('food__item_price'))  # item_price is string now, we'll cast next
+    )
+
+    # Step 2: Convert to usable map {order_number: total_price}
+    order_price_map = {
+        order['order_number']: float(order['total_price']) for order in orders if order['order_number']
+    }
+
+    # Step 3: Get order dates from OrderAddress
+    addresses = (
+        OrderAddress.objects
+        .filter(order_number__in=order_price_map.keys())
+        .annotate(month=TruncMonth('order_time'))
+        .values('month', 'order_number')
+    )
+
+    # Step 4: Sum total sales per month
+    month_totals = defaultdict(float)
+    for addr in addresses:
+        order_number = addr['order_number']
+        month = addr['month'].strftime('%b') if addr['month'] else "Unknown"
+        month_totals[month] += order_price_map.get(order_number, 0)
+
+    # Step 5: Return formatted result
+    result = [{"month": month, "sales": round(sales, 2)} for month, sales in month_totals.items()]
+    return Response(result)
+
+@api_view(['GET'])
+def top_selling_food(request):
+   top_sells = Order.objects.values('food__item_name').annotate(total_quantity = Sum('quantity')).order_by('-total_quantity')[:5]
+   return Response(top_sells)
+    

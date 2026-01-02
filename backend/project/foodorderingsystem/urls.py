@@ -8,6 +8,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 urlpatterns = [
     path("admin-login/", views.admin_login),
     path("admin-check/", AdminCheckAPIView.as_view()),
+    path('dashboard-metrics/', dashboard_metrics),
     path("add-fetch-category/", AddFetchCategory.as_view()),
     path("category-detail/<int:id>/", CategoryDetail.as_view()),
     path("place_order/", PaymentView.as_view()),
@@ -41,5 +42,7 @@ urlpatterns = [
     path('orders-between-dates/', order_report_between_dates),
     path('order-view-detail/<str:order_number>/', order_view_detail),
     path('update-order-status/', update_order_status, name='update_order_status'),
-    path("search-orders/", search_order)
+    path("search-orders/", search_order),
+     path('sales-by-month/',monthly_sales_summary),
+      path('top-selling-foods/',top_selling_food),
 ]
