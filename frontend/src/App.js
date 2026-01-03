@@ -35,6 +35,7 @@ import ManageUser from "./pages/ManageUser";
 import FoodList from "./pages/FoodList";
 import TrackOrder from "./pages/TrackOrder";
 import Wishlist from "./pages/Wishlist";
+import ManageReviews from "./pages/ManageReviews";
 
 function App() {
   return (
@@ -64,6 +65,7 @@ function App() {
           <Route path="addfood" element={<AddFood />} />
           <Route path="managefood" element={<ManageFood />} />
           <Route path="addcategory" element={<AddCategory />} />
+          <Route path="reviews" element={<ManageReviews />} />
           <Route path="managecategory" element={<ManageCategory />} />
           <Route path="users" element={<ManageUser />} />
           <Route path="orders/new" element={<OrdersNotConfirmed />} />

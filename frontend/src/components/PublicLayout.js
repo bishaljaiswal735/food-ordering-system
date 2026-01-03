@@ -20,7 +20,7 @@ const PublicLayout = ({ children }) => {
 
   const fetchCartCount = async () => {
     if (userId) {
-      const res = await fetch(`http://127.0.0.1:8000/api/cart/${userId}/`);
+      const res = await fetch(`http://127.0.0.1:8000/api/cart/cart-list/${userId}/`);
       const data = await res.json();
       setCartCount(data.length);
     }

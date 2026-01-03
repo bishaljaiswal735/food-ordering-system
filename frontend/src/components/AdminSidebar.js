@@ -87,7 +87,7 @@ function AdminSidebar() {
          <Link to="/admin/order-search" className="list-group-item list-group-item-action bg-dark text-white border-0">
           <FaSearch /> Search
         </Link>
-        <Link to="/admin-reviews" className="list-group-item list-group-item-action bg-dark text-white">
+        <Link to="/admin/reviews" className="list-group-item list-group-item-action bg-dark text-white">
           <FaSearch /> Manage Reviews
         </Link>
       </div>

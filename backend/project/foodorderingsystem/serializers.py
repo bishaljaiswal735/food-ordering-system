@@ -138,3 +138,14 @@ class TrackingSerializer(serializers.ModelSerializer):
     class Meta:
         model = FoodTracking
         fields = "__all__"
+
+class ReviewSerializer(serializers.ModelSerializer):
+    user_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Review
+        fields = ['id', 'user', 'user_name', 'food', 'rating', 'comment', 'created_at']
+
+    def get_user_name(self, obj):
+        return f"{obj.user.first_name} {obj.user.last_name}"
+    

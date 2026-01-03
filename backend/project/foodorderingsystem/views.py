@@ -56,7 +56,7 @@ def add_carts(request):
     food_id = request.data.get("foodId")
     user_id = request.data.get("userId")
     try:
-        order = Order.objects.get(food__id=food_id, user__id=user_id)
+        order = Order.objects.get(food__id=food_id, user__id=user_id, is_order_placed = False)
         order.quantity += 1
         order.save()
         return Response({"message": "already exist ot cart and quantity added on it "})
@@ -803,3 +803,59 @@ def track_order(request, order_number):
     )
     serializer = TrackingSerializer(tracking_entries, many=True)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+def food_reviews(request, food_id):
+    reviews = Review.objects.filter(food_id=food_id).order_by('-created_at')
+    serializer = ReviewSerializer(reviews, many=True)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+def add_review(request, food_id):
+    user_id = request.data.get('user_id')
+    rating = request.data.get('rating')
+    comment = request.data.get('comment', '')
+
+    if not user_id or not rating:
+        return Response({'message': 'user_id and rating are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        user = User.objects.get(id=user_id)
+        food = Food.objects.get(id=food_id)
+    except (User.DoesNotExist, Food.DoesNotExist):
+        return Response({'message': 'User or Food not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    review = Review.objects.create(
+        user=user,
+        food=food,
+        rating=rating,
+        comment=comment
+    )
+
+    serializer = ReviewSerializer(review)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+@api_view(['DELETE', 'PUT'])
+def review_detail(request, pk):
+    try:
+        review = Review.objects.get(pk=pk)
+    except Review.DoesNotExist:
+        return Response({'message': 'Review not found'}, status=404)
+
+    if request.method == 'DELETE':
+        review.delete()
+        return Response({'message': 'Deleted'}, status=204)
+
+    elif request.method == 'PUT':
+        if review.user.id != request.data.get("user_id"):
+            return Response({'message': 'Not allowed'}, status=403)
+        serializer = ReviewSerializer(review, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+    
