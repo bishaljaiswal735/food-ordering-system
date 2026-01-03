@@ -1,6 +1,6 @@
-# 🍽️ Food Ordering System
+# 🍽️ Django React Food App
 
-A full-stack **Food Ordering System** that allows users to browse food items, add them to a cart, and place orders.  
+A full-stack ** Django React Food App ** that allows users to browse food items, add them to a cart, and place orders.  
 The project includes **JWT-based authentication** and an admin panel for managing food items, categories, and orders.
 
 Built using **Django REST Framework** for the backend and **React** for the frontend.
