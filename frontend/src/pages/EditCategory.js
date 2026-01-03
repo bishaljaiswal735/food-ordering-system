@@ -32,7 +32,9 @@ function EditCategory() {
     setSubmitting(true);
 
     try {
-      const res = await api.patch(`category-detail/${id}/`, { category_name: categoryName });
+      const res = await api.patch(`category-detail/${id}/`, {
+        category_name: categoryName,
+      });
       alert(res.data.message || "Category updated successfully");
       navigate("/admin/managecategory");
     } catch (err) {
@@ -59,7 +61,9 @@ function EditCategory() {
 
                 <form onSubmit={handleUpdate}>
                   <div className="form-group mb-4">
-                    <label className="form-label fw-semibold">Category Name</label>
+                    <label className="form-label fw-semibold">
+                      Category Name
+                    </label>
                     <input
                       type="text"
                       className="form-control"
@@ -80,7 +84,6 @@ function EditCategory() {
                     </button>
                   </div>
                 </form>
-
               </div>
             </div>
           </div>

@@ -32,6 +32,8 @@ import SearchOrders from './pages/SearchOrders';
 import EditCategory from './pages/EditCategory';
 import EditFood from './pages/EditFood';
 import ManageUser from './pages/ManageUser';
+import FoodList from './pages/FoodList';
+import TrackOrder from './pages/TrackOrder';
 
 
 function App() {
@@ -47,7 +49,9 @@ function App() {
       <Route path='/payment' element={<PaymentPage/>}></Route>
       <Route path='/my-orders' element={<MyOrders/>}></Route>
       <Route path='/profile' element={<ProfilePage/>}></Route>
+      <Route path="/track" element={<TrackOrder />} />
       <Route path='/change-password' element={<ChangePassword/>}></Route>
+      <Route path="/foods" element={<FoodList />} />
       <Route path='/order-details/:order_number' element={<OrderDetails/>}></Route>
       <Route path="/admin" element={<AdminProtectedRoute />}>
           <Route index element={<AdminDashboard />} />

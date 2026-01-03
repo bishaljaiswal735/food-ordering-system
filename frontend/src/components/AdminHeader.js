@@ -7,13 +7,20 @@ function AdminHeader({ toggleSidebar, sidebarOpen, newOrders }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
 
+const handleLogout = () => {
+  // Remove user info
+  localStorage.removeItem("adminUser");
+
+  // Remove tokens
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+
+  // Redirect to login
+  navigate("/adminlogin");
+};
 
   
-  const handleLogout = () => {
-    localStorage.removeItem("adminUser");
-    navigate("/admin-login");
-  };
-
+ 
   const toggleNavbar = () => {
     setIsCollapsed(!isCollapsed);
   };
@@ -45,7 +52,7 @@ function AdminHeader({ toggleSidebar, sidebarOpen, newOrders }) {
   className="btn btn-outline-secondary position-relative"
   onClick={() => {
     if (newOrders > 0) {
-      navigate('/admin-orders/new');
+      navigate('orders/new');
     }
   }}
   title={newOrders > 0 ? 'View New Orders' : 'No new orders'}

@@ -209,22 +209,22 @@ class FoodDetail(APIView):
         return [AllowAny()]
 
     def patch(self, request, pk):
-            try:
-                food = Food.objects.get(id=pk)
-            except Food.DoesNotExist:
-                return Response(
-                    {"message": "Food not found"}, status=status.HTTP_404_NOT_FOUND
-                )
+        try:
+            food = Food.objects.get(id=pk)
+        except Food.DoesNotExist:
+            return Response(
+                {"message": "Food not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
-            serializer = FoodSerializer(food, data=request.data, partial=True)
+        serializer = FoodSerializer(food, data=request.data, partial=True)
 
-            if serializer.is_valid():
-                serializer.save()
-                return Response(
-                    {"message": "Food updated successfully"}, status=status.HTTP_200_OK
-                )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"message": "Food updated successfully"}, status=status.HTTP_200_OK
+            )
 
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, pk):
         item = get_object_or_404(Food, id=pk)
@@ -249,11 +249,11 @@ class AddFetchUser(APIView):
         if self.request.method == "GET":
             return [IsAdminUser()]
         return [AllowAny()]
-    def get(self, request):
-        user = User.objects.filter(~Q(is_staff = True))
-        serializer = UserSerializer(user, many = True)
-        return Response(serializer.data,status = status.HTTP_200_OK)
 
+    def get(self, request):
+        user = User.objects.filter(~Q(is_staff=True))
+        serializer = UserSerializer(user, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         serializer = UserSerializer(data=request.data)
@@ -263,16 +263,21 @@ class AddFetchUser(APIView):
                 {"message": "Registered Successfully!!"}, status=status.HTTP_201_CREATED
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
 class UserDetail(APIView):
     permission_classes = [IsAdminUser]
+
     def delete(self, request, pk):
         try:
-         user = User.objects.get(pk=pk)
-         user.delete()
-         return Response({"message":"deleted successfully"}, status = status.HTTP_200_OK)
+            user = User.objects.get(pk=pk)
+            user.delete()
+            return Response(
+                {"message": "deleted successfully"}, status=status.HTTP_200_OK
+            )
         except ObjectDoesNotExist:
-          return Response({"message": "User not found"}, status=404)
+            return Response({"message": "User not found"}, status=404)
+
 
 @api_view(["POST"])
 def user_login(request):
@@ -319,7 +324,7 @@ class PaymentView(APIView):
         serializer = PaymentSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data.get("user")
-            orders = Order.objects.filter(user=user, is_order_placed = False)
+            orders = Order.objects.filter(user=user, is_order_placed=False)
             order_number = make_unique_order_number()
             orders.update(order_number=order_number, is_order_placed=True)
             order_address = serializer.validated_data.get("order_address")
@@ -571,7 +576,6 @@ def order_report_between_dates(request):
 
 @api_view(["GET"])
 def order_view_detail(request, order_number):
-    print(order_number)
     orders = Order.objects.filter(order_number=order_number).select_related("user")
     food_ids = orders.values_list("food", flat=True)
     foods = Food.objects.filter(id__in=food_ids)
@@ -628,10 +632,13 @@ def search_order(request):
     serializer = OrderAddressSerializer(orders, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 from django.utils.timezone import now, timedelta
 from django.db.models import Sum, F, FloatField
 from django.db.models.functions import Cast
-@api_view(['GET'])
+
+
+@api_view(["GET"])
 def dashboard_metrics(request):
     today = now().date()
     start_week = today - timedelta(days=today.weekday())
@@ -640,22 +647,42 @@ def dashboard_metrics(request):
 
     def get_sales_total(start_date):
         # Get order_numbers from PaymentDetail after start_date
-        paid_orders = PaymentDetail.objects.filter(payment_date__gte=start_date).values_list('order_number', flat=True)
+        paid_orders = PaymentDetail.objects.filter(
+            payment_date__gte=start_date
+        ).values_list("order_number", flat=True)
 
         # Join with Order model and calculate total sale amount
-        total = Order.objects.filter(order_number__in=paid_orders).annotate(
-            total_price=F('quantity') * Cast(F('food__item_price'), FloatField())
-        ).aggregate(sale_amount=Sum('total_price'))['sale_amount'] or 0.0
+        total = (
+            Order.objects.filter(order_number__in=paid_orders)
+            .annotate(
+                total_price=F("quantity") * Cast(F("food__item_price"), FloatField())
+            )
+            .aggregate(sale_amount=Sum("total_price"))["sale_amount"]
+            or 0.0
+        )
 
         return round(total, 2)
+
     data = {
         "total_orders": OrderAddress.objects.count(),
-        "new_orders": OrderAddress.objects.filter(order_final_status__isnull=True).count(),
-        "confirmed_orders": OrderAddress.objects.filter(order_final_status="Order Confirmed").count(),
-        "food_preparing": OrderAddress.objects.filter(order_final_status="Food being Prepared").count(),
-        "food_pickup": OrderAddress.objects.filter(order_final_status="Food Pickup").count(),
-        "food_delivered": OrderAddress.objects.filter(order_final_status="Food Delivered").count(),
-        "cancelled_orders": OrderAddress.objects.filter(order_final_status="Order Cancelled").count(),
+        "new_orders": OrderAddress.objects.filter(
+            order_final_status__isnull=True
+        ).count(),
+        "confirmed_orders": OrderAddress.objects.filter(
+            order_final_status="Order Confirmed"
+        ).count(),
+        "food_preparing": OrderAddress.objects.filter(
+            order_final_status="Food being Prepared"
+        ).count(),
+        "food_pickup": OrderAddress.objects.filter(
+            order_final_status="Food Pickup"
+        ).count(),
+        "food_delivered": OrderAddress.objects.filter(
+            order_final_status="Food Delivered"
+        ).count(),
+        "cancelled_orders": OrderAddress.objects.filter(
+            order_final_status="Order Cancelled"
+        ).count(),
         "total_users": User.objects.count(),
         "total_categories": Category.objects.count(),
         "total_reviews": Review.objects.count(),
@@ -667,45 +694,112 @@ def dashboard_metrics(request):
     }
     return Response(data)
 
-from django.db.models.functions import TruncMonth
+
+from django.db.models.functions import TruncMonth, TruncWeek
 from django.db.models import Sum
 from collections import defaultdict
-@api_view(['GET'])
+
+
+@api_view(["GET"])
 def monthly_sales_summary(request):
     # Step 1: Get placed orders with total price per order_number
     orders = (
-        Order.objects
-        .filter(is_order_placed=True)
-        .values('order_number')
-        .annotate(total_price=Sum('food__item_price'))  # item_price is string now, we'll cast next
+        Order.objects.filter(is_order_placed=True)
+        .values("order_number")
+        .annotate(
+            total_price=Sum("food__item_price")
+        )  # item_price is string now, we'll cast next
     )
 
     # Step 2: Convert to usable map {order_number: total_price}
     order_price_map = {
-        order['order_number']: float(order['total_price']) for order in orders if order['order_number']
+        order["order_number"]: float(order["total_price"])
+        for order in orders
+        if order["order_number"]
     }
 
     # Step 3: Get order dates from OrderAddress
     addresses = (
-        OrderAddress.objects
-        .filter(order_number__in=order_price_map.keys())
-        .annotate(month=TruncMonth('order_time'))
-        .values('month', 'order_number')
+        OrderAddress.objects.filter(order_number__in=order_price_map.keys())
+        .annotate(month=TruncMonth("order_time"))
+        .values("month", "order_number")
     )
 
     # Step 4: Sum total sales per month
     month_totals = defaultdict(float)
     for addr in addresses:
-        order_number = addr['order_number']
-        month = addr['month'].strftime('%b') if addr['month'] else "Unknown"
+        order_number = addr["order_number"]
+        month = addr["month"].strftime("%b") if addr["month"] else "Unknown"
         month_totals[month] += order_price_map.get(order_number, 0)
 
     # Step 5: Return formatted result
-    result = [{"month": month, "sales": round(sales, 2)} for month, sales in month_totals.items()]
+    result = [
+        {"month": month, "sales": round(sales, 2)}
+        for month, sales in month_totals.items()
+    ]
     return Response(result)
 
-@api_view(['GET'])
+
+@api_view(["GET"])
 def top_selling_food(request):
-   top_sells = Order.objects.values('food__item_name').annotate(total_quantity = Sum('quantity')).order_by('-total_quantity')[:5]
-   return Response(top_sells)
-    
+    top_sells = (
+        Order.objects.values("food__item_name")
+        .annotate(total_quantity=Sum("quantity"))
+        .order_by("-total_quantity")[:5]
+    )
+    return Response(top_sells)
+
+
+@api_view(["GET"])
+def weekly_sales_summary(request):
+    # Step 1: Get all placed orders and total price per order
+    orders = (
+        Order.objects.filter(is_order_placed=True)
+        .values("order_number")
+        .annotate(total_price=Sum("food__item_price"))
+    )
+
+    # Step 2: Create a map of order_number -> price
+    order_price_map = {
+        order["order_number"]: float(order["total_price"])
+        for order in orders
+        if order["order_number"]
+    }
+
+    # Step 3: Get weeks from OrderAddress
+    addresses = (
+        OrderAddress.objects.filter(order_number__in=order_price_map.keys())
+        .annotate(week=TruncWeek("order_time"))
+        .values("week", "order_number")
+    )
+
+    # Step 4: Group by week
+    weekly_totals = defaultdict(float)
+    for addr in addresses:
+        order_number = addr["order_number"]
+        week = addr["week"].strftime("Week %W") if addr["week"] else "Unknown"
+        weekly_totals[week] += order_price_map.get(order_number, 0)
+
+    # Step 5: Return result
+    result = [
+        {"week": week, "sales": round(total, 2)}
+        for week, total in weekly_totals.items()
+    ]
+    return Response(result)
+
+
+@api_view(["GET"])
+def track_order(request, order_number):
+    # Get the first order item (as reference) for this order_number
+    sample_order = Order.objects.filter(
+        order_number=order_number, is_order_placed=True
+    ).first()
+
+    if not sample_order:
+        return Response({"message": "Order not found or not yet placed."}, status=404)
+
+    tracking_entries = FoodTracking.objects.filter(order=sample_order).order_by(
+        "status_date"
+    )
+    serializer = TrackingSerializer(tracking_entries, many=True)
+    return Response(serializer.data)
